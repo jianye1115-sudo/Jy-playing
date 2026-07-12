@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Default (English) strings. ALL user-facing text lives here so the app can be
+  localized. Translated copies live in values-ms (Malay), values-zh (Chinese)
+  and values-ta (Tamil). Keep keys identical across all locales.
+-->
+<resources>
+    <string name="app_name">StepBuddy</string>
+
+    <!-- Onboarding / role picker -->
+    <string name="onboarding_welcome_title">Welcome to StepBuddy</string>
+    <string name="onboarding_welcome_subtitle">Simple, spoken, step-by-step help.</string>
+    <string name="onboarding_choose_role">Who is using this phone?</string>
+    <string name="role_elderly_title">This is my phone</string>
+    <string name="role_elderly_desc">I want easy, spoken step-by-step help.</string>
+    <string name="role_caregiver_title">I help a family member</string>
+    <string name="role_caregiver_desc">I will create guides for someone else.</string>
+    <string name="onboarding_pick_language">Choose your language</string>
+    <string name="onboarding_continue">Continue</string>
+    <string name="onboarding_tutorial_title">How it works</string>
+    <string name="onboarding_tutorial_elderly">Guides from your family appear here. Tap one, and StepBuddy reads each step out loud while you tap along.</string>
+    <string name="onboarding_tutorial_caregiver">Create a guide, add steps, then link your family member\'s phone with a code or a link. Your guides appear on their phone automatically.</string>
+    <string name="onboarding_get_started">Get started</string>
+
+    <!-- Permissions rationale -->
+    <string name="perm_title">Two quick permissions</string>
+    <string name="perm_notifications_title">Show step reminders</string>
+    <string name="perm_notifications_desc">StepBuddy shows the current step in a notification so it stays visible while you use your bank or wallet app.</string>
+    <string name="perm_overlay_title">Floating helper (optional)</string>
+    <string name="perm_overlay_desc">Show a small floating bubble with Repeat and Next on top of other apps. Some secure apps block this — StepBuddy will use the notification instead.</string>
+    <string name="perm_grant">Allow</string>
+    <string name="perm_skip">Not now</string>
+    <string name="perm_notifications_denied">Reminders are off. You can turn them on later in Settings.</string>
+
+    <!-- Elderly home -->
+    <string name="elderly_home_title">Your guides</string>
+    <string name="elderly_no_guides_title">No guides yet</string>
+    <string name="elderly_no_guides_desc">Ask your family to send you a guide. It will appear here on its own.</string>
+    <string name="elderly_connect_button">Connect to family</string>
+    <string name="elderly_read_screen">Read this screen</string>
+
+    <!-- Guide playback (elderly) -->
+    <string name="playback_step_of">Step %1$d of %2$d</string>
+    <string name="playback_repeat">Repeat</string>
+    <string name="playback_next">Next</string>
+    <string name="playback_back">Back</string>
+    <string name="playback_close">Close</string>
+    <string name="playback_ready_open_app">Ready — open the app</string>
+    <string name="playback_ready_open_page">Ready — open the page</string>
+    <string name="playback_finish">Finish</string>
+    <string name="playback_done_title">All done!</string>
+    <string name="playback_done_desc">You finished this guide.</string>
+    <string name="playback_start">Start</string>
+
+    <!-- Notification -->
+    <string name="notif_channel_name">Guide steps</string>
+    <string name="notif_channel_desc">Shows the current step while you follow a guide.</string>
+    <string name="notif_guidance_ongoing">Following a guide</string>
+
+    <!-- Caregiver home -->
+    <string name="caregiver_home_title">Your guides</string>
+    <string name="caregiver_new_guide">New guide</string>
+    <string name="caregiver_manage_devices">Linked phones</string>
+    <string name="caregiver_no_guides">No guides yet. Tap “New guide” to create one.</string>
+    <string name="caregiver_push_hint">Changes push to linked phones automatically.</string>
+
+    <!-- Guide editor -->
+    <string name="editor_guide_title_hint">Guide title (e.g. Send money)</string>
+    <string name="editor_guide_icon_hint">Icon</string>
+    <string name="editor_guide_language">Guide language</string>
+    <string name="editor_add_step">Add step</string>
+    <string name="editor_no_steps">No steps yet. Add the first step.</string>
+    <string name="editor_save">Save</string>
+    <string name="editor_duplicate">Duplicate</string>
+    <string name="editor_delete">Delete</string>
+    <string name="editor_move_up">Move up</string>
+    <string name="editor_move_down">Move down</string>
+    <string name="editor_preview">Preview</string>
+
+    <!-- Step editor -->
+    <string name="step_instruction_hint">What should they do? (plain words)</string>
+    <string name="step_add_screenshot">Add screenshot</string>
+    <string name="step_remove_screenshot">Remove screenshot</string>
+    <string name="step_highlight">Draw highlight box</string>
+    <string name="step_target_label">When they tap “Ready”, open:</string>
+    <string name="step_target_none">Nothing</string>
+    <string name="step_target_url">A web page</string>
+    <string name="step_target_app">An app</string>
+    <string name="step_target_url_hint">https://…</string>
+    <string name="step_target_app_hint">App package (e.g. com.bank.app)</string>
+    <string name="step_sensitive_warning">⚠️ Do not include account numbers, card numbers, IC/passport numbers, PINs or OTP codes in screenshots or text.</string>
+
+    <!-- Pairing (shared) -->
+    <string name="pairing_title">Link a phone</string>
+    <string name="pairing_caregiver_desc">Show this code to your family member, or send them the link. It works once.</string>
+    <string name="pairing_code_label">Your code</string>
+    <string name="pairing_share_link">Share invite link</string>
+    <string name="pairing_new_code">New code</string>
+    <string name="pairing_waiting">Waiting for their phone to connect…</string>
+    <string name="pairing_connected">Connected!</string>
+
+    <!-- Pairing (elderly) -->
+    <string name="pairing_elderly_title">Connect to family</string>
+    <string name="pairing_elderly_desc">Enter the 6-digit code, or scan the square code.</string>
+    <string name="pairing_enter_code">Enter code</string>
+    <string name="pairing_scan_qr">Scan code</string>
+    <string name="pairing_connect">Connect</string>
+    <string name="pairing_connecting">Connecting…</string>
+    <string name="pairing_success">You\'re connected! Guides will appear on their own.</string>
+    <string name="pairing_error_not_found">That code was not found. Please check and try again.</string>
+    <string name="pairing_error_used">That code was already used.</string>
+    <string name="pairing_error_network">No connection. Please check the internet and try again.</string>
+    <string name="pairing_prefilled_hint">A family member invited you. Just tap Connect.</string>
+
+    <!-- Manage devices (caregiver) -->
+    <string name="devices_title">Linked phones</string>
+    <string name="devices_none">No phones linked yet.</string>
+    <string name="devices_linked_on">Linked %1$s</string>
+    <string name="devices_unlink">Unlink</string>
+    <string name="devices_add">Link another phone</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_font_size">Text size</string>
+    <string name="settings_speech_rate">Speaking speed</string>
+    <string name="settings_overlay">Floating helper bubble</string>
+    <string name="settings_overlay_desc">Show controls on top of other apps where allowed.</string>
+    <string name="settings_test_voice">Test the voice</string>
+    <string name="settings_test_voice_text">Hello. This is how StepBuddy will read your steps.</string>
+    <string name="settings_font_small">Small</string>
+    <string name="settings_font_large">Large</string>
+    <string name="settings_speech_slow">Slow</string>
+    <string name="settings_speech_fast">Fast</string>
+    <string name="settings_export">Export a guide to a file</string>
+    <string name="settings_import">Import a guide from a file</string>
+    <string name="settings_switch_role">Change role</string>
+
+    <!-- TTS -->
+    <string name="tts_missing_voice_title">Voice not installed</string>
+    <string name="tts_missing_voice_desc">The voice for this language is not installed. Install it to hear the steps read aloud.</string>
+    <string name="tts_install_voice">Install voice</string>
+    <string name="tts_continue_silent">Continue without voice</string>
+
+    <!-- Common -->
+    <string name="action_cancel">Cancel</string>
+    <string name="action_ok">OK</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_save">Save</string>
+    <string name="action_share">Share</string>
+    <string name="action_back">Back</string>
+    <string name="confirm_delete_guide_title">Delete this guide?</string>
+    <string name="confirm_delete_guide_desc">This cannot be undone. Linked phones will stop receiving it.</string>
+    <string name="confirm_delete_step_title">Delete this step?</string>
+    <string name="confirm_unlink_title">Unlink this phone?</string>
+    <string name="confirm_unlink_desc">They will stop receiving your guides.</string>
+    <string name="overlay_unavailable">The floating bubble can\'t show here, so StepBuddy is using the notification instead.</string>
+
+    <!-- Content descriptions (accessibility) -->
+    <string name="cd_guide_icon">Guide icon</string>
+    <string name="cd_step_screenshot">Step screenshot</string>
+    <string name="cd_qr_code">Pairing QR code</string>
+</resources>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Chinese (zh). Keys not present here fall back to values/strings.xml. -->
+<resources>
+    <string name="app_name">StepBuddy</string>
+
+    <string name="onboarding_welcome_title">欢迎使用 StepBuddy</string>
+    <string name="onboarding_welcome_subtitle">简单、语音、一步一步的帮助。</string>
+    <string name="onboarding_choose_role">谁在使用这部手机？</string>
+    <string name="role_elderly_title">这是我的手机</string>
+    <string name="role_elderly_desc">我想要简单的语音分步帮助。</string>
+    <string name="role_caregiver_title">我帮助家人</string>
+    <string name="role_caregiver_desc">我会为别人制作指南。</string>
+    <string name="onboarding_pick_language">选择您的语言</string>
+    <string name="onboarding_continue">继续</string>
+    <string name="onboarding_get_started">开始</string>
+
+    <string name="elderly_home_title">您的指南</string>
+    <string name="elderly_no_guides_title">还没有指南</string>
+    <string name="elderly_no_guides_desc">请家人给您发送指南。它会自动出现在这里。</string>
+    <string name="elderly_connect_button">连接家人</string>
+    <string name="elderly_read_screen">朗读此屏幕</string>
+
+    <string name="playback_step_of">第 %1$d 步，共 %2$d 步</string>
+    <string name="playback_repeat">重复</string>
+    <string name="playback_next">下一步</string>
+    <string name="playback_back">上一步</string>
+    <string name="playback_close">关闭</string>
+    <string name="playback_ready_open_app">准备好了 — 打开应用</string>
+    <string name="playback_ready_open_page">准备好了 — 打开网页</string>
+    <string name="playback_finish">完成</string>
+    <string name="playback_done_title">全部完成！</string>
+    <string name="playback_done_desc">您已完成此指南。</string>
+    <string name="playback_start">开始</string>
+
+    <string name="notif_channel_name">指南步骤</string>
+    <string name="notif_guidance_ongoing">正在跟随指南</string>
+
+    <string name="pairing_elderly_title">连接家人</string>
+    <string name="pairing_elderly_desc">输入 6 位数字代码，或扫描方形二维码。</string>
+    <string name="pairing_enter_code">输入代码</string>
+    <string name="pairing_scan_qr">扫描代码</string>
+    <string name="pairing_connect">连接</string>
+    <string name="pairing_connecting">连接中…</string>
+    <string name="pairing_success">已连接！指南会自动出现。</string>
+    <string name="pairing_error_not_found">找不到该代码。请检查后重试。</string>
+    <string name="pairing_prefilled_hint">家人邀请了您。只需点击“连接”。</string>
+
+    <string name="settings_title">设置</string>
+    <string name="settings_language">语言</string>
+    <string name="settings_font_size">文字大小</string>
+    <string name="settings_speech_rate">语速</string>
+    <string name="settings_test_voice">测试语音</string>
+
+    <string name="action_cancel">取消</string>
+    <string name="action_ok">确定</string>
+</resources>

@@ -1,0 +1,77 @@
+<!doctype html>
+<!--
+  Fallback web page for the StepBuddy invite link, served at
+  https://stepbuddy.app/pair (e.g. GitHub Pages, Firebase Hosting, Netlify).
+
+  Behaviour:
+   - If StepBuddy is INSTALLED, Android verifies the App Link (assetlinks.json)
+     and opens the app straight to the pre-filled pairing screen — this page is
+     never shown.
+   - If StepBuddy is NOT installed, the browser loads this page, which shows the
+     6-digit code in big digits and a large "Install StepBuddy" button.
+
+  NOTE: true install-then-auto-pair ("deferred deep linking") would need a
+  third-party service such as Branch, because Firebase Dynamic Links was shut
+  down in Aug 2025. That is intentionally OPTIONAL here — after installing, the
+  user simply types the code shown below (one field, big digits).
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Connect with StepBuddy</title>
+  <style>
+    :root { --teal:#00695C; --amber:#FF8F00; --ink:#1A1C1B; --bg:#FFFDF8; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+           background:var(--bg); color:var(--ink); display:flex; min-height:100vh;
+           align-items:center; justify-content:center; padding:24px; }
+    .card { width:100%; max-width:420px; text-align:center; }
+    .logo { font-size:56px; }
+    h1 { font-size:28px; margin:8px 0 4px; }
+    p { font-size:18px; line-height:1.5; }
+    .code-label { font-size:16px; color:#5f5f58; margin-top:24px; }
+    .code { font-size:56px; font-weight:800; letter-spacing:10px; color:var(--teal);
+            background:#E0F2F1; border-radius:16px; padding:16px 8px; margin:8px 0 24px; }
+    .btn { display:block; width:100%; padding:20px; font-size:22px; font-weight:700;
+           border:none; border-radius:16px; text-decoration:none; cursor:pointer; }
+    .btn-primary { background:var(--teal); color:#fff; }
+    .btn-secondary { background:transparent; color:var(--teal); border:2px solid var(--teal);
+                     margin-top:12px; }
+    .steps { text-align:left; margin-top:28px; font-size:17px; color:#333; }
+    .steps li { margin-bottom:8px; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="logo">👣</div>
+    <h1>Connect with StepBuddy</h1>
+    <p>A family member wants to send you easy, spoken step-by-step guides.</p>
+
+    <div class="code-label">Your connect code</div>
+    <div class="code" id="code">••••••</div>
+
+    <!-- Replace the Play Store link once the app is published. -->
+    <a class="btn btn-primary" id="install"
+       href="https://play.google.com/store/apps/details?id=app.stepbuddy">Install StepBuddy</a>
+    <!-- If already installed, this tries to open the app via the custom scheme. -->
+    <a class="btn btn-secondary" id="openApp" href="#">I already have StepBuddy</a>
+
+    <ol class="steps">
+      <li>Tap <strong>Install StepBuddy</strong>.</li>
+      <li>Open the app and choose <strong>“This is my phone.”</strong></li>
+      <li>Tap <strong>Connect to family</strong> and type the code above.</li>
+    </ol>
+  </main>
+
+  <script>
+    // Read ?code=123456 and show it big; wire the "already installed" deep link.
+    const params = new URLSearchParams(location.search);
+    const code = (params.get('code') || '').replace(/\D/g, '').slice(0, 6);
+    if (code) {
+      document.getElementById('code').textContent = code;
+      document.getElementById('openApp').setAttribute('href', 'stepbuddy://pair?code=' + code);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+*.iml
+.gradle/
+/local.properties
+/.idea/
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Firebase config with real keys should NOT be committed in a real project.
+# We ship a clearly-marked SAMPLE google-services.json so the project is
+# self-documenting; replace it with your own and consider ignoring it:
+# app/google-services.json

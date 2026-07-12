@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Malay (ms). Keys not present here fall back to values/strings.xml. -->
+<resources>
+    <string name="app_name">StepBuddy</string>
+
+    <string name="onboarding_welcome_title">Selamat datang ke StepBuddy</string>
+    <string name="onboarding_welcome_subtitle">Bantuan langkah demi langkah, dibaca dengan suara.</string>
+    <string name="onboarding_choose_role">Siapa yang menggunakan telefon ini?</string>
+    <string name="role_elderly_title">Ini telefon saya</string>
+    <string name="role_elderly_desc">Saya mahu bantuan langkah demi langkah dengan suara.</string>
+    <string name="role_caregiver_title">Saya membantu ahli keluarga</string>
+    <string name="role_caregiver_desc">Saya akan membuat panduan untuk orang lain.</string>
+    <string name="onboarding_pick_language">Pilih bahasa anda</string>
+    <string name="onboarding_continue">Teruskan</string>
+    <string name="onboarding_get_started">Mulakan</string>
+
+    <string name="elderly_home_title">Panduan anda</string>
+    <string name="elderly_no_guides_title">Belum ada panduan</string>
+    <string name="elderly_no_guides_desc">Minta keluarga hantar panduan. Ia akan muncul di sini sendiri.</string>
+    <string name="elderly_connect_button">Sambung kepada keluarga</string>
+    <string name="elderly_read_screen">Baca skrin ini</string>
+
+    <string name="playback_step_of">Langkah %1$d daripada %2$d</string>
+    <string name="playback_repeat">Ulang</string>
+    <string name="playback_next">Seterusnya</string>
+    <string name="playback_back">Kembali</string>
+    <string name="playback_close">Tutup</string>
+    <string name="playback_ready_open_app">Sedia — buka aplikasi</string>
+    <string name="playback_ready_open_page">Sedia — buka halaman</string>
+    <string name="playback_finish">Selesai</string>
+    <string name="playback_done_title">Siap!</string>
+    <string name="playback_done_desc">Anda telah selesai panduan ini.</string>
+    <string name="playback_start">Mula</string>
+
+    <string name="notif_channel_name">Langkah panduan</string>
+    <string name="notif_guidance_ongoing">Mengikuti panduan</string>
+
+    <string name="pairing_elderly_title">Sambung kepada keluarga</string>
+    <string name="pairing_elderly_desc">Masukkan kod 6 digit, atau imbas kod segi empat.</string>
+    <string name="pairing_enter_code">Masukkan kod</string>
+    <string name="pairing_scan_qr">Imbas kod</string>
+    <string name="pairing_connect">Sambung</string>
+    <string name="pairing_connecting">Menyambung…</string>
+    <string name="pairing_success">Anda telah bersambung! Panduan akan muncul sendiri.</string>
+    <string name="pairing_error_not_found">Kod itu tidak dijumpai. Sila semak dan cuba lagi.</string>
+    <string name="pairing_prefilled_hint">Ahli keluarga menjemput anda. Cuma tekan Sambung.</string>
+
+    <string name="settings_title">Tetapan</string>
+    <string name="settings_language">Bahasa</string>
+    <string name="settings_font_size">Saiz teks</string>
+    <string name="settings_speech_rate">Kelajuan suara</string>
+    <string name="settings_test_voice">Uji suara</string>
+
+    <string name="action_cancel">Batal</string>
+    <string name="action_ok">OK</string>
+</resources>

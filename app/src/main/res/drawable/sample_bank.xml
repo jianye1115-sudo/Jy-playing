@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder "screenshot" for the online banking sample guide.
+     A generic app-screen mockup — deliberately NOT a real bank UI. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="360dp"
+    android:viewportWidth="200"
+    android:viewportHeight="360">
+    <path android:fillColor="#FFFFFF" android:pathData="M0,0 h200 v360 h-200 z" />
+    <path android:fillColor="#00695C" android:pathData="M0,0 h200 v56 h-200 z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M16,22 h90 v12 h-90 z" />
+    <!-- Card -->
+    <path android:fillColor="#E0F2F1" android:pathData="M16,76 h168 v70 h-168 z" />
+    <path android:fillColor="#00897B" android:pathData="M28,92 h80 v10 h-80 z" />
+    <path android:fillColor="#B2DFDB" android:pathData="M28,112 h140 v8 h-140 z" />
+    <!-- List rows -->
+    <path android:fillColor="#EEEEEE" android:pathData="M16,164 h168 v34 h-168 z" />
+    <path android:fillColor="#EEEEEE" android:pathData="M16,206 h168 v34 h-168 z" />
+    <path android:fillColor="#EEEEEE" android:pathData="M16,248 h168 v34 h-168 z" />
+    <!-- Primary button -->
+    <path android:fillColor="#FF8F00" android:pathData="M16,300 h168 v40 h-168 z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M74,315 h52 v10 h-52 z" />
+</vector>

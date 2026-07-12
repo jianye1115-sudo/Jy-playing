@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Local guide cache (Room) and settings may be backed up. Never back up
+     any transient credential-like data — the app stores none by design. -->
+<full-backup-content>
+    <include domain="database" path="stepbuddy.db" />
+    <include domain="sharedpref" path="." />
+    <include domain="file" path="datastore/" />
+</full-backup-content>

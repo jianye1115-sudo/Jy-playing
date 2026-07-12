@@ -1,0 +1,60 @@
+rules_version = '2';
+// StepBuddy Firestore Security Rules.
+//
+// Access-control goal: a guide is only readable by devices paired to its author.
+// We model membership with a `links/{caregiverId}_{elderlyId}` document written
+// when an elderly device claims a pairing (see FirebaseSync.claimPairing) and
+// deleted on revoke. Firebase uids contain no '_', so it's a safe delimiter.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function uid() { return request.auth.uid; }
+    function linkedTo(authorId) {
+      return exists(/databases/$(database)/documents/links/$(authorId + '_' + uid()));
+    }
+
+    // Pairings are keyed by their 6-digit code so an elderly device can look one
+    // up by code. Codes are short-lived; any signed-in user may read one, but
+    // only the caregiver can create it and only the intended parties can change it.
+    match /pairings/{code} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.caregiverId == uid()
+        && request.resource.data.status == 'PENDING';
+      allow update: if signedIn() && (
+        // Caregiver managing (e.g. revoke) their own pairing.
+        resource.data.caregiverId == uid()
+        // Elderly device claiming a still-pending code for itself.
+        || (resource.data.status == 'PENDING' && request.resource.data.elderlyId == uid())
+      );
+    }
+
+    // Membership links. The elderly device creates its own link on claim.
+    match /links/{linkId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && linkId.split('_')[1] == uid();
+      allow delete: if signedIn()
+        && (linkId.split('_')[0] == uid() || linkId.split('_')[1] == uid());
+    }
+
+    // Guides: authored (write) by the caregiver; readable by the author or any
+    // elderly device linked to that author.
+    match /guides/{guideId} {
+      allow read: if signedIn()
+        && (resource.data.authorId == uid() || linkedTo(resource.data.authorId));
+      allow create, update: if signedIn()
+        && request.resource.data.authorId == uid();
+      allow delete: if signedIn() && resource.data.authorId == uid();
+
+      match /steps/{stepId} {
+        function guideAuthor() {
+          return get(/databases/$(database)/documents/guides/$(guideId)).data.authorId;
+        }
+        allow read: if signedIn()
+          && (guideAuthor() == uid() || linkedTo(guideAuthor()));
+        allow write: if signedIn() && guideAuthor() == uid();
+      }
+    }
+  }
+}

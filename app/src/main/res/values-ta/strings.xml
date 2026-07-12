@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tamil (ta). Keys not present here fall back to values/strings.xml. -->
+<resources>
+    <string name="app_name">StepBuddy</string>
+
+    <string name="onboarding_welcome_title">StepBuddy-க்கு வரவேற்கிறோம்</string>
+    <string name="onboarding_welcome_subtitle">எளிய, குரல் வழி, படிப்படியான உதவி.</string>
+    <string name="onboarding_choose_role">இந்த தொலைபேசியை யார் பயன்படுத்துகிறார்?</string>
+    <string name="role_elderly_title">இது என் தொலைபேசி</string>
+    <string name="role_elderly_desc">எனக்கு எளிய குரல் வழி படிப்படியான உதவி வேண்டும்.</string>
+    <string name="role_caregiver_title">நான் குடும்ப உறுப்பினருக்கு உதவுகிறேன்</string>
+    <string name="role_caregiver_desc">மற்றவருக்கு வழிகாட்டிகளை உருவாக்குவேன்.</string>
+    <string name="onboarding_pick_language">உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்</string>
+    <string name="onboarding_continue">தொடரவும்</string>
+    <string name="onboarding_get_started">தொடங்கவும்</string>
+
+    <string name="elderly_home_title">உங்கள் வழிகாட்டிகள்</string>
+    <string name="elderly_no_guides_title">இன்னும் வழிகாட்டிகள் இல்லை</string>
+    <string name="elderly_no_guides_desc">குடும்பத்தை வழிகாட்டி அனுப்பச் சொல்லுங்கள். அது தானாக இங்கே தோன்றும்.</string>
+    <string name="elderly_connect_button">குடும்பத்துடன் இணைக்கவும்</string>
+    <string name="elderly_read_screen">இந்தத் திரையைப் படிக்கவும்</string>
+
+    <string name="playback_step_of">படி %1$d / %2$d</string>
+    <string name="playback_repeat">மீண்டும்</string>
+    <string name="playback_next">அடுத்து</string>
+    <string name="playback_back">பின்</string>
+    <string name="playback_close">மூடு</string>
+    <string name="playback_ready_open_app">தயார் — செயலியைத் திற</string>
+    <string name="playback_ready_open_page">தயார் — பக்கத்தைத் திற</string>
+    <string name="playback_finish">முடி</string>
+    <string name="playback_done_title">முடிந்தது!</string>
+    <string name="playback_done_desc">இந்த வழிகாட்டியை முடித்துவிட்டீர்கள்.</string>
+    <string name="playback_start">தொடங்கு</string>
+
+    <string name="notif_channel_name">வழிகாட்டி படிகள்</string>
+    <string name="notif_guidance_ongoing">வழிகாட்டியைப் பின்பற்றுகிறது</string>
+
+    <string name="pairing_elderly_title">குடும்பத்துடன் இணைக்கவும்</string>
+    <string name="pairing_elderly_desc">6-இலக்க குறியீட்டை உள்ளிடவும், அல்லது சதுர குறியீட்டை ஸ்கேன் செய்யவும்.</string>
+    <string name="pairing_enter_code">குறியீட்டை உள்ளிடவும்</string>
+    <string name="pairing_scan_qr">குறியீட்டை ஸ்கேன் செய்யவும்</string>
+    <string name="pairing_connect">இணைக்கவும்</string>
+    <string name="pairing_connecting">இணைக்கிறது…</string>
+    <string name="pairing_success">இணைக்கப்பட்டது! வழிகாட்டிகள் தானாகத் தோன்றும்.</string>
+    <string name="pairing_error_not_found">அந்தக் குறியீடு காணப்படவில்லை. சரிபார்த்து மீண்டும் முயற்சிக்கவும்.</string>
+    <string name="pairing_prefilled_hint">குடும்ப உறுப்பினர் உங்களை அழைத்துள்ளார். இணைக்கவும் என்பதை அழுத்தவும்.</string>
+
+    <string name="settings_title">அமைப்புகள்</string>
+    <string name="settings_language">மொழி</string>
+    <string name="settings_font_size">எழுத்து அளவு</string>
+    <string name="settings_speech_rate">பேசும் வேகம்</string>
+    <string name="settings_test_voice">குரலைச் சோதிக்கவும்</string>
+
+    <string name="action_cancel">ரத்து</string>
+    <string name="action_ok">சரி</string>
+</resources>

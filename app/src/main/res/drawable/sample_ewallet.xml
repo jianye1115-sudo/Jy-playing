@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder "screenshot" for the e-wallet top-up sample guide.
+     Generic mockup — not a real wallet UI. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="360dp"
+    android:viewportWidth="200"
+    android:viewportHeight="360">
+    <path android:fillColor="#FFFFFF" android:pathData="M0,0 h200 v360 h-200 z" />
+    <path android:fillColor="#FF8F00" android:pathData="M0,0 h200 v56 h-200 z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M16,22 h70 v12 h-70 z" />
+    <!-- Balance card -->
+    <path android:fillColor="#FFF3E0" android:pathData="M16,76 h168 v64 h-168 z" />
+    <path android:fillColor="#FF8F00" android:pathData="M28,92 h60 v10 h-60 z" />
+    <path android:fillColor="#FFE0B2" android:pathData="M28,110 h120 v14 h-120 z" />
+    <!-- Amount chips -->
+    <path android:fillColor="#E0F2F1" android:pathData="M16,158 h50 v34 h-50 z" />
+    <path android:fillColor="#E0F2F1" android:pathData="M75,158 h50 v34 h-50 z" />
+    <path android:fillColor="#00695C" android:pathData="M134,158 h50 v34 h-50 z" />
+    <!-- Top up button -->
+    <path android:fillColor="#00695C" android:pathData="M16,300 h168 v40 h-168 z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M70,315 h60 v10 h-60 z" />
+</vector>

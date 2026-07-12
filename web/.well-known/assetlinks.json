@@ -1,0 +1,16 @@
+[
+  {
+    "//": "SAMPLE. Host this at https://stepbuddy.app/.well-known/assetlinks.json to verify the App Link.",
+    "//fingerprint": "Replace the fingerprint with your APP SIGNING certificate SHA-256 (Play Console > App integrity > App signing key certificate). For local debug builds, add your debug keystore's SHA-256 too (keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android).",
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.stepbuddy",
+      "sha256_cert_fingerprints": [
+        "AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99"
+      ]
+    }
+  }
+]

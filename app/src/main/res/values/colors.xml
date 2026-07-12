@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Warm teal + amber palette, tuned for high contrast (WCAG AA/AAA on the
+  large text the elderly UI uses). The Compose theme in ui/theme/Color.kt is
+  the runtime source of truth; these mirror the key colors for the window
+  background and status bar defined in the XML theme.
+-->
+<resources>
+    <color name="teal_700">#00695C</color>   <!-- primary -->
+    <color name="teal_500">#00897B</color>
+    <color name="amber_600">#FF8F00</color>  <!-- accent / secondary -->
+    <color name="background">#FFFDF8</color> <!-- warm off-white -->
+    <color name="on_background">#1A1C1B</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="ic_launcher_background">#00695C</color>
+</resources>

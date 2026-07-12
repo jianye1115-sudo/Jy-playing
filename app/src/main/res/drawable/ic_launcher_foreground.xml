@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Footprints motif for StepBuddy. 108x108 with content kept inside the
+     central 72x72 safe zone required for adaptive icons. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Left footprint (heel + sole) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M40,44
+            m-9,0
+            a9,13 0 1,0 18,0
+            a9,13 0 1,0 -18,0 Z" />
+    <!-- Left toes -->
+    <path android:fillColor="#FFFFFF" android:pathData="M33,30 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M41,28 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M48,31 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0 Z" />
+
+    <!-- Right footprint (heel + sole), stepped forward and to the right -->
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M70,68
+            m-9,0
+            a9,13 0 1,0 18,0
+            a9,13 0 1,0 -18,0 Z" />
+    <!-- Right toes -->
+    <path android:fillColor="#FFD54F" android:pathData="M63,54 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0 Z" />
+    <path android:fillColor="#FFD54F" android:pathData="M71,52 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0 Z" />
+    <path android:fillColor="#FFD54F" android:pathData="M78,55 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0 Z" />
+</vector>

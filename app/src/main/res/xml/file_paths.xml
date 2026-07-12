@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- FileProvider paths for sharing exported .stepbuddy files and screenshots. -->
+<paths>
+    <files-path name="exports" path="exports/" />
+    <files-path name="screenshots" path="screenshots/" />
+    <cache-path name="shared" path="shared/" />
+</paths>

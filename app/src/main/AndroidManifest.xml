@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Post the persistent playback notification (Android 13+ runtime permission). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Foreground service so guidance survives switching to the bank/browser app. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!-- OPTIONAL floating overlay bubble. Best-effort; many secure apps block it. -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- Firebase sync. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- QR scanning uses the camera; declared optional so devices without a
+         camera can still pair by typing the 6-digit code. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
+    <application
+        android:name=".StepBuddyApp"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.StepBuddy"
+        tools:targetApi="34">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.StepBuddy">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- INVITE LINK (App Link). Verified against
+                 https://stepbuddy.app/.well-known/assetlinks.json so the OS can
+                 open the app directly, without the "open with" chooser.
+                 Example: https://stepbuddy.app/pair?code=123456 -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="${pairingHost}" android:pathPrefix="/pair" />
+                <!-- Also accept http so links pasted without https still resolve. -->
+                <data android:scheme="http" android:host="${pairingHost}" android:pathPrefix="/pair" />
+            </intent-filter>
+
+            <!-- Custom scheme fallback for QR codes / testing:
+                 stepbuddy://pair?code=123456 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="stepbuddy" android:host="pair" />
+            </intent-filter>
+        </activity>
+
+        <!-- Foreground service that drives step-by-step playback + notification. -->
+        <service
+            android:name=".service.GuidePlaybackService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Guides an elderly user through app steps with a persistent, controllable notification." />
+        </service>
+
+        <!-- Optional overlay bubble service (SYSTEM_ALERT_WINDOW). -->
+        <service
+            android:name=".service.OverlayService"
+            android:exported="false" />
+
+        <!-- Share exported .stepbuddy files. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+</manifest>
