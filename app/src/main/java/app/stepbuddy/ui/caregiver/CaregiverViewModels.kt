@@ -135,7 +135,7 @@ class GuideEditorViewModel(
         guide.copy(steps = guide.steps.map { if (it.id == stepId) transform(it) else it })
     }
 
-    private inline fun edit(crossinline transform: (Guide) -> Guide) {
+    private fun edit(transform: (Guide) -> Guide) {
         _draft.value = _draft.value?.let(transform)
     }
 
