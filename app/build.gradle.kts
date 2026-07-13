@@ -100,4 +100,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)   // Compose UI tests on device
+    debugImplementation(libs.androidx.ui.test.manifest)       // test activity/manifest bits
 }
