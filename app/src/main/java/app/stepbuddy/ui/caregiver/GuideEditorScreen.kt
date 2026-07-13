@@ -62,6 +62,7 @@ import app.stepbuddy.data.model.TargetType
 import app.stepbuddy.ui.common.BigPrimaryButton
 import app.stepbuddy.ui.common.BigSecondaryButton
 import app.stepbuddy.ui.common.ConfirmDialog
+import app.stepbuddy.service.GuidePlaybackService
 import app.stepbuddy.ui.common.StepImage
 import app.stepbuddy.ui.containerViewModel
 import app.stepbuddy.util.ImageStorage
@@ -74,7 +75,7 @@ import java.io.File
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GuideEditorScreen(guideId: String?, onDone: () -> Unit) {
+fun GuideEditorScreen(guideId: String?, onDone: () -> Unit, onPreview: () -> Unit) {
     val vm = containerViewModel {
         GuideEditorViewModel(it.guideRepository, it.settingsRepository, it.firebaseSync)
     }
@@ -184,6 +185,15 @@ fun GuideEditorScreen(guideId: String?, onDone: () -> Unit) {
                     text = stringResource(R.string.editor_add_step),
                     icon = Icons.Filled.Add,
                     onClick = { vm.addStep() },
+                )
+            }
+            item {
+                // Preview: save, then play the guide through the same playback
+                // path the elderly device uses (on-screen + spoken + notification).
+                BigSecondaryButton(
+                    text = stringResource(R.string.editor_preview),
+                    enabled = guide.steps.isNotEmpty(),
+                    onClick = { vm.save { GuidePlaybackService.start(context, guide.id); onPreview() } },
                 )
             }
             item {

@@ -76,6 +76,8 @@ fun StepBuddyNavHost(navController: NavHostController, startDestination: String)
             GuideEditorScreen(
                 guideId = entry.arguments?.getString("guideId"),
                 onDone = { navController.popBackStack() },
+                // Preview reuses the shared playback screen (works for either role).
+                onPreview = { navController.navigate(Routes.PLAYBACK) },
             )
         }
         composable(Routes.CAREGIVER_DEVICES) {
