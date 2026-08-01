@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chess Helper</title>
+<style>
+  :root {
+    --bg: #14161a;
+    --panel: #1c1f25;
+    --panel-2: #23272f;
+    --line: #2f343d;
+    --text: #e6e8ec;
+    --muted: #949aa6;
+    --accent: #6ea8fe;
+    --good: #7bc86c;
+    --bad: #e5736b;
+    --light-sq: #ebecd0;
+    --dark-sq: #779556;
+    --sel: rgba(255, 214, 0, 0.45);
+    --last: rgba(255, 214, 0, 0.28);
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f4f5f7;
+      --panel: #ffffff;
+      --panel-2: #f0f1f4;
+      --line: #dcdfe5;
+      --text: #1b1e24;
+      --muted: #6b7280;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 18px;
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  h1 {
+    font-size: 17px;
+    margin: 0 0 2px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+
+  .sub { color: var(--muted); font-size: 12.5px; margin-bottom: 16px; }
+
+  .layout {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  /* ---------- board ---------- */
+
+  .board-area { display: flex; gap: 10px; align-items: stretch; }
+
+  .evalbar {
+    width: 20px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #33383f;
+    border: 1px solid #4a5058;
+    position: relative;
+    flex: none;
+  }
+  .evalbar-white {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: #fbfbfb;
+    height: 50%;
+    transition: height 0.25s ease;
+  }
+  .evalbar-mid {
+    position: absolute; left: 0; right: 0; top: 50%;
+    border-top: 1px dashed rgba(128,128,128,0.6);
+  }
+
+  .board-wrap { position: relative; flex: none; }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    width: min(78vw, 512px);
+    height: min(78vw, 512px);
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    touch-action: none;
+    user-select: none;
+  }
+
+  .sq {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .sq.light { background: var(--light-sq); }
+  .sq.dark  { background: var(--dark-sq); }
+  .sq.sel::after,
+  .sq.lastmove::after {
+    content: ""; position: absolute; inset: 0;
+  }
+  .sq.sel::after { background: var(--sel); }
+  .sq.lastmove::after { background: var(--last); }
+  .sq.check { box-shadow: inset 0 0 0 3px #e5736b; }
+
+  /* Legal-move markers sit above the highlight layer. */
+  .sq .dot {
+    position: absolute;
+    width: 30%; height: 30%;
+    border-radius: 50%;
+    background: rgba(20, 20, 20, 0.28);
+    z-index: 2;
+    pointer-events: none;
+  }
+  .sq .ring {
+    position: absolute;
+    inset: 6%;
+    border-radius: 50%;
+    border: 4px solid rgba(20, 20, 20, 0.26);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .piece {
+    font-size: min(9.2vw, 60px);
+    line-height: 1;
+    z-index: 3;
+    pointer-events: none;
+    /* Solid glyphs are used for both colours; white pieces are filled white
+       and outlined so they stay readable on the light squares. */
+    color: #f8f8f8;
+    text-shadow:
+       1px 0 0 #33373d, -1px 0 0 #33373d,
+       0 1px 0 #33373d, 0 -1px 0 #33373d,
+       1px 1px 0 #33373d, -1px -1px 0 #33373d,
+       1px -1px 0 #33373d, -1px 1px 0 #33373d;
+  }
+  .piece.black { color: #2b2f36; text-shadow: none; }
+
+  .piece.dragging {
+    position: fixed;
+    z-index: 50;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+  }
+
+  /* Rank/file labels tucked into the edge squares, tinted to contrast with
+     whichever square colour they land on. */
+  .sq .coord {
+    position: absolute;
+    font-size: 9.5px;
+    font-weight: 700;
+    line-height: 1;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.72;
+  }
+  .sq.light .coord { color: var(--dark-sq); }
+  .sq.dark .coord  { color: var(--light-sq); }
+  .sq .coord.rank { top: 2px; left: 3px; }
+  .sq .coord.file { bottom: 2px; right: 3px; }
+
+  #arrows {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  /* ---------- panel ---------- */
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px;
+    width: 330px;
+    flex: 1 1 330px;
+    min-width: 300px;
+  }
+
+  .best {
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+  .best-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .best-move {
+    font-size: 30px; font-weight: 680; letter-spacing: -0.02em;
+    margin: 2px 0 4px; font-variant-numeric: tabular-nums;
+  }
+  .best-move.none { font-size: 18px; color: var(--muted); font-weight: 500; }
+  .best-eval { font-size: 14px; font-weight: 600; }
+  .best-eval.pos { color: var(--good); }
+  .best-eval.neg { color: var(--bad); }
+
+  .stats {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    font-size: 11.5px; color: var(--muted);
+    margin-top: 6px; font-variant-numeric: tabular-nums;
+  }
+
+  .pv {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 8px;
+    line-height: 1.6;
+    word-spacing: 3px;
+    max-height: 62px;
+    overflow-y: auto;
+  }
+  .pv b { color: var(--text); font-weight: 600; }
+
+  .row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 9px; }
+
+  button {
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 7px 11px;
+    font-size: 12.5px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  button:hover:not(:disabled) { border-color: var(--accent); }
+  button:disabled { opacity: 0.45; cursor: default; }
+  button.primary { background: var(--accent); color: #10131a; border-color: var(--accent); font-weight: 600; }
+
+  label.field { display: block; font-size: 11.5px; color: var(--muted); margin: 12px 0 4px; }
+
+  input[type=text], select {
+    width: 100%;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 7px 9px;
+    font: 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+
+  .toggle { display: flex; align-items: center; gap: 7px; font-size: 12.5px; margin: 7px 0; cursor: pointer; }
+  .toggle input { accent-color: var(--accent); width: 15px; height: 15px; }
+
+  .moves {
+    margin-top: 12px;
+    border-top: 1px solid var(--line);
+    padding-top: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+    font: 12.5px ui-monospace, SFMono-Regular, Menlo, monospace;
+    line-height: 1.75;
+  }
+  .moves .num { color: var(--muted); margin-right: 3px; }
+  .moves .mv { margin-right: 9px; }
+
+  .status {
+    margin-top: 10px; padding: 8px 10px; border-radius: 6px;
+    font-size: 12.5px; background: var(--panel-2); border: 1px solid var(--line);
+  }
+  .status.err { border-color: var(--bad); color: var(--bad); }
+  .status.win { border-color: var(--good); color: var(--good); }
+
+  /* ---------- position editor ---------- */
+
+  .editor { display: none; border-top: 1px solid var(--line); margin-top: 12px; padding-top: 10px; }
+  .editor.open { display: block; }
+  .palette { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+  .palette button {
+    width: 36px; height: 36px; font-size: 22px; line-height: 1;
+    display: flex; align-items: center; justify-content: center; padding: 0;
+  }
+  .palette button.on { border-color: var(--accent); background: var(--accent); color: #10131a; }
+  .castling { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; margin: 6px 0; }
+  .castling label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+
+  /* ---------- promotion dialog ---------- */
+
+  .promo-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+    display: none; align-items: center; justify-content: center; z-index: 100;
+  }
+  .promo-backdrop.open { display: flex; }
+  .promo {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; padding: 16px; text-align: center;
+  }
+  .promo div { margin-bottom: 10px; font-size: 13px; }
+  .promo button { font-size: 32px; width: 56px; height: 56px; padding: 0; }
+
+  .footnote { color: var(--muted); font-size: 11.5px; margin-top: 14px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<h1>Chess Helper</h1>
+<div class="sub">Set up the position, get the strongest move. Analysis runs entirely in your browser.</div>
+
+<div class="layout">
+  <div class="board-area">
+    <div class="evalbar" title="Evaluation (White at the bottom)">
+      <div class="evalbar-white" id="evalWhite"></div>
+      <div class="evalbar-mid"></div>
+    </div>
+    <div class="board-wrap">
+      <div class="board" id="board"></div>
+      <svg id="arrows" viewBox="0 0 800 800">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="5" refY="5"
+                  markerWidth="3.4" markerHeight="3.4" orient="auto">
+            <path d="M 0 0.6 L 10 5 L 0 9.4 z" fill="#2f7ae5"></path>
+          </marker>
+        </defs>
+        <g id="arrowLayer" opacity="0.82"></g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="best">
+      <div class="best-label">Best move</div>
+      <div class="best-move none" id="bestMove">—</div>
+      <div class="best-eval" id="bestEval"></div>
+      <div class="stats">
+        <span id="statDepth">depth —</span>
+        <span id="statNodes">— nodes</span>
+        <span id="statSpeed">—</span>
+      </div>
+      <div class="pv" id="pvLine"></div>
+    </div>
+
+    <div class="row">
+      <button class="primary" id="btnAnalyze">Analyse</button>
+      <button id="btnPlayBest">Play best move</button>
+      <button id="btnUndo">Undo</button>
+    </div>
+    <div class="row">
+      <button id="btnFlip">Flip board</button>
+      <button id="btnReset">New game</button>
+      <button id="btnEdit">Set up position</button>
+    </div>
+
+    <label class="field">Thinking time: <span id="timeLabel">1.5s</span></label>
+    <input type="range" id="thinkTime" min="200" max="10000" step="100" value="1500">
+
+    <label class="toggle">
+      <input type="checkbox" id="autoAnalyze" checked>
+      Analyse automatically after every move
+    </label>
+
+    <label class="field">FEN</label>
+    <input type="text" id="fenBox" spellcheck="false">
+    <div class="row" style="margin-top:7px">
+      <button id="btnLoadFen">Load FEN</button>
+      <button id="btnCopyFen">Copy FEN</button>
+    </div>
+
+    <div class="status" id="status">Ready.</div>
+
+    <div class="editor" id="editor">
+      <div class="palette" id="palette"></div>
+      <div class="row">
+        <button id="btnClearBoard">Empty board</button>
+        <button id="btnStartPos">Start position</button>
+      </div>
+      <label class="field">Side to move</label>
+      <select id="editSide">
+        <option value="w">White to move</option>
+        <option value="b">Black to move</option>
+      </select>
+      <div class="castling">
+        <label><input type="checkbox" id="cWK" checked> White O-O</label>
+        <label><input type="checkbox" id="cWQ" checked> White O-O-O</label>
+        <label><input type="checkbox" id="cBK" checked> Black O-O</label>
+        <label><input type="checkbox" id="cBQ" checked> Black O-O-O</label>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button class="primary" id="btnApplyEdit">Done editing</button>
+        <button id="btnCancelEdit">Cancel</button>
+      </div>
+    </div>
+
+    <div class="moves" id="moveList"></div>
+
+    <div class="footnote">
+      Intended for analysing your own games and practising against computer
+      opponents. Do not use it during rated games against people.
+    </div>
+  </div>
+</div>
+
+<div class="promo-backdrop" id="promoBackdrop">
+  <div class="promo">
+    <div>Promote to</div>
+    <div id="promoChoices"></div>
+  </div>
+</div>
+
+<script src="engine.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var E = window.ChessEngine;
+
+  var GLYPH = { p: '♟', n: '♞', b: '♝', r: '♜', q: '♛', k: '♚' };
+
+  var state = {
+    pos: new E.Position(E.START_FEN),
+    history: [],          // { san, uci, fenBefore }
+    orientation: E.WHITE,
+    selected: -1,
+    legalFromSelected: [],
+    lastMove: null,       // { from, to }
+    best: null,           // latest analysis info
+    analyzing: false,
+    editing: false,
+    editBoard: null,
+    editPiece: 'wP',
+    requestId: 0,
+    shownFen: null
+  };
+
+  var el = {};
+  ['board', 'arrows', 'arrowLayer', 'bestMove', 'bestEval', 'statDepth', 'statNodes',
+   'statSpeed', 'pvLine', 'fenBox', 'status', 'moveList', 'evalWhite', 'timeLabel',
+   'thinkTime', 'autoAnalyze', 'editor', 'palette', 'editSide', 'promoBackdrop',
+   'promoChoices'
+  ].forEach(function (id) { el[id] = document.getElementById(id); });
+
+  /* ---------------------------------------------------------------- *
+   * Engine driver
+   *
+   * A Worker keeps the UI responsive, but workers cannot be created from a
+   * file:// page, so there is an in-page fallback that searches one depth per
+   * task and yields to the browser in between.
+   * ---------------------------------------------------------------- */
+
+  var driver = (function () {
+    var worker = null;
+    try {
+      worker = new Worker('worker.js');
+    } catch (err) {
+      worker = null;
+    }
+
+    var handlers = {};
+    var usingWorker = !!worker;
+
+    if (worker) {
+      worker.onmessage = function (e) {
+        var msg = e.data;
+        if (!handlers[msg.id]) return;
+        if (msg.type === 'info') handlers[msg.id].onInfo(msg.info);
+        else if (msg.type === 'result') {
+          var h = handlers[msg.id];
+          delete handlers[msg.id];
+          h.onDone(msg.info);
+        }
+      };
+      // A worker that fails to start (file://, blocked script) reports here.
+      worker.onerror = function () {
+        usingWorker = false;
+        worker = null;
+      };
+    }
+
+    var fallbackSearcher = null;
+
+    function analyzeInPage(id, fen, timeMs, maxDepth, onInfo, onDone) {
+      if (!fallbackSearcher) fallbackSearcher = new E.Searcher(20);
+      var pos;
+      try { pos = new E.Position(fen); }
+      catch (err) { onDone(null, String(err.message || err)); return; }
+
+      var deadline = Date.now() + timeMs;
+      var depth = 1;
+      var last = null;
+
+      function step() {
+        if (handlers[id] === undefined) return;   // superseded by a newer request
+        var remaining = deadline - Date.now();
+        if (depth > maxDepth || remaining <= 0) {
+          delete handlers[id];
+          onDone(last);
+          return;
+        }
+        // Re-running the shallow depths is cheap because the transposition
+        // table survives between calls.
+        var info = fallbackSearcher.search(pos, { timeMs: remaining, maxDepth: depth });
+        last = {
+          uci: info.uci, san: info.san, score: info.score, mate: info.mate,
+          depth: info.depth, nodes: info.nodes, timeMs: timeMs - (deadline - Date.now()),
+          pvSan: info.pvSan
+        };
+        onInfo(last);
+        if (info.mate !== null) { delete handlers[id]; onDone(last); return; }
+        depth++;
+        setTimeout(step, 0);
+      }
+      setTimeout(step, 0);
+    }
+
+    return {
+      usingWorker: function () { return usingWorker; },
+      analyze: function (fen, timeMs, maxDepth, onInfo, onDone) {
+        var id = ++state.requestId;
+        handlers[id] = { onInfo: onInfo, onDone: onDone };
+        if (usingWorker && worker) {
+          worker.postMessage({ type: 'analyze', id: id, fen: fen, timeMs: timeMs, maxDepth: maxDepth });
+        } else {
+          analyzeInPage(id, fen, timeMs, maxDepth, onInfo, onDone);
+        }
+        return id;
+      },
+      cancel: function () {
+        // Results for superseded requests are simply ignored.
+        handlers = {};
+      }
+    };
+  })();
+
+  /* ---------------------------------------------------------------- *
+   * Rendering
+   * ---------------------------------------------------------------- */
+
+  function squaresInOrder() {
+    var out = [];
+    for (var r = 7; r >= 0; r--) {
+      for (var f = 0; f < 8; f++) out.push(r * 16 + f);
+    }
+    if (state.orientation === E.BLACK) out.reverse();
+    return out;
+  }
+
+  function boardArray() {
+    return state.editing ? state.editBoard : state.pos.board;
+  }
+
+  function coordLabel(kind, text) {
+    var span = document.createElement('span');
+    span.className = 'coord ' + kind;
+    span.textContent = text;
+    return span;
+  }
+
+  function renderBoard() {
+    var order = squaresInOrder();
+    var board = boardArray();
+    var frag = document.createDocumentFragment();
+    var checkSq = -1;
+    if (!state.editing && state.pos.inCheck()) checkSq = state.pos.kingSq[state.pos.side];
+
+    order.forEach(function (sq, idx) {
+      var div = document.createElement('div');
+      var isLight = ((E.fileOf(sq) + E.rankOf(sq)) & 1) === 1;
+      div.className = 'sq ' + (isLight ? 'light' : 'dark');
+      div.dataset.sq = sq;
+
+      if (sq === state.selected) div.classList.add('sel');
+      if (state.lastMove && !state.editing &&
+          (sq === state.lastMove.from || sq === state.lastMove.to)) {
+        div.classList.add('lastmove');
+      }
+      if (sq === checkSq) div.classList.add('check');
+
+      var pc = board[sq];
+      if (pc) {
+        var span = document.createElement('span');
+        var ch = E.PIECE_TO_CHAR[pc];
+        span.className = 'piece' + (ch === ch.toLowerCase() ? ' black' : '');
+        span.textContent = GLYPH[ch.toLowerCase()];
+        div.appendChild(span);
+      }
+
+      if (!state.editing && state.legalFromSelected.indexOf(sq) >= 0) {
+        var mark = document.createElement('div');
+        mark.className = pc ? 'ring' : 'dot';
+        div.appendChild(mark);
+      }
+
+      // Label the left column with ranks and the bottom row with files.
+      if ((idx & 7) === 0) div.appendChild(coordLabel('rank', E.rankOf(sq) + 1));
+      if (idx >= 56) div.appendChild(coordLabel('file', 'abcdefgh'.charAt(E.fileOf(sq))));
+
+      frag.appendChild(div);
+    });
+
+    el.board.innerHTML = '';
+    el.board.appendChild(frag);
+  }
+
+  function renderArrow() {
+    // Only the arrow layer is cleared; wiping the whole <svg> would take the
+    // <defs> arrowhead with it.
+    var layer = el.arrowLayer;
+    while (layer.firstChild) layer.removeChild(layer.firstChild);
+    if (state.editing || !state.best || !state.best.uci) return;
+
+    var from = E.squareFromName(state.best.uci.slice(0, 2));
+    var to = E.squareFromName(state.best.uci.slice(2, 4));
+    if (from < 0 || to < 0) return;
+
+    var c = function (sq) {
+      var f = E.fileOf(sq), r = E.rankOf(sq);
+      if (state.orientation === E.BLACK) { f = 7 - f; r = 7 - r; }
+      return { x: f * 100 + 50, y: (7 - r) * 100 + 50 };
+    };
+    var a = c(from), b = c(to);
+
+    var dx = b.x - a.x, dy = b.y - a.y;
+    var len = Math.sqrt(dx * dx + dy * dy) || 1;
+    var ux = dx / len, uy = dy / len;
+    // Start clear of the moving piece and stop short of the target so the
+    // arrowhead lands inside the destination square rather than past it.
+    var ax = a.x + ux * 30, ay = a.y + uy * 30;
+    var bx = b.x - ux * 34, by = b.y - uy * 34;
+
+    var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', ax); line.setAttribute('y1', ay);
+    line.setAttribute('x2', bx); line.setAttribute('y2', by);
+    line.setAttribute('stroke', '#2f7ae5');
+    line.setAttribute('stroke-width', '14');
+    line.setAttribute('stroke-linecap', 'round');
+    line.setAttribute('marker-end', 'url(#ah)');
+    layer.appendChild(line);
+  }
+
+  function formatEval(info) {
+    if (!info) return '';
+    if (info.mate !== null && info.mate !== undefined) {
+      // Scores come back relative to the side to move; show them from White's
+      // point of view so the sign always means the same thing.
+      var m = state.pos.side === E.WHITE ? info.mate : -info.mate;
+      return (m > 0 ? 'Mate in ' + m : 'Mated in ' + Math.abs(m));
+    }
+    var cp = state.pos.side === E.WHITE ? info.score : -info.score;
+    return (cp > 0 ? '+' : '') + (cp / 100).toFixed(2);
+  }
+
+  function renderAnalysis() {
+    var info = state.best;
+    if (!info || !info.san) {
+      el.bestMove.textContent = state.analyzing ? 'thinking…' : '—';
+      el.bestMove.className = 'best-move none';
+      el.bestEval.textContent = '';
+      el.statDepth.textContent = 'depth —';
+      el.statNodes.textContent = '— nodes';
+      el.statSpeed.textContent = '';
+      el.pvLine.textContent = '';
+      setEvalBar(0, null);
+      return;
+    }
+
+    el.bestMove.textContent = info.san;
+    el.bestMove.className = 'best-move';
+
+    var text = formatEval(info);
+    el.bestEval.textContent = text;
+    var whiteCp = state.pos.side === E.WHITE ? info.score : -info.score;
+    el.bestEval.className = 'best-eval ' + (whiteCp > 30 ? 'pos' : whiteCp < -30 ? 'neg' : '');
+
+    el.statDepth.textContent = 'depth ' + info.depth + (state.analyzing ? '…' : '');
+    el.statNodes.textContent = info.nodes.toLocaleString() + ' nodes';
+    el.statSpeed.textContent = info.timeMs > 0
+      ? Math.round(info.nodes / info.timeMs) + 'k n/s' : '';
+
+    renderPv(info.pvSan);
+    setEvalBar(whiteCp, info.mate === null || info.mate === undefined
+      ? null : (state.pos.side === E.WHITE ? info.mate : -info.mate));
+  }
+
+  function renderPv(pvSan) {
+    if (!pvSan || !pvSan.length) { el.pvLine.textContent = ''; return; }
+    var moveNo = state.pos.fullmove;
+    var whiteToMove = state.pos.side === E.WHITE;
+    var parts = [];
+    for (var i = 0; i < pvSan.length; i++) {
+      if (whiteToMove) {
+        if (i % 2 === 0) parts.push('<b>' + (moveNo + i / 2) + '.</b>');
+      } else if (i === 0) {
+        parts.push('<b>' + moveNo + '…</b>');
+      } else if (i % 2 === 1) {
+        parts.push('<b>' + (moveNo + (i + 1) / 2) + '.</b>');
+      }
+      parts.push(escapeHtml(pvSan[i]));
+    }
+    el.pvLine.innerHTML = parts.join(' ');
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>]/g, function (c) {
+      return c === '&' ? '&amp;' : c === '<' ? '&lt;' : '&gt;';
+    });
+  }
+
+  function setEvalBar(cp, mate) {
+    var frac;
+    if (mate !== null && mate !== undefined) {
+      frac = mate > 0 ? 1 : 0;
+    } else {
+      // A logistic curve keeps small edges visible without letting a big
+      // material lead peg the bar immediately.
+      frac = 1 / (1 + Math.pow(10, -cp / 400));
+    }
+    el.evalWhite.style.height = (Math.max(0.02, Math.min(0.98, frac)) * 100) + '%';
+  }
+
+  function renderMoveList() {
+    var out = [];
+    for (var i = 0; i < state.history.length; i++) {
+      if (i % 2 === 0) {
+        out.push('<span class="num">' + (Math.floor(i / 2) + 1) + '.</span>');
+      }
+      out.push('<span class="mv">' + escapeHtml(state.history[i].san) + '</span>');
+    }
+    el.moveList.innerHTML = out.join(' ');
+    el.moveList.scrollTop = el.moveList.scrollHeight;
+  }
+
+  function setStatus(text, kind) {
+    el.status.textContent = text;
+    el.status.className = 'status' + (kind ? ' ' + kind : '');
+  }
+
+  function describeResult(result) {
+    if (result === 'checkmate') {
+      return (state.pos.side === E.WHITE ? 'Black' : 'White') + ' wins by checkmate.';
+    }
+    if (result === 'stalemate') return 'Draw — stalemate.';
+    if (result === 'fifty-move') return 'Draw — fifty-move rule.';
+    if (result === 'repetition') return 'Draw — threefold repetition.';
+    if (result === 'insufficient-material') return 'Draw — insufficient material.';
+    return null;
+  }
+
+  function render() {
+    renderBoard();
+    renderArrow();
+    renderAnalysis();
+    renderMoveList();
+    // Analysis updates re-render several times a second. Rewriting the FEN box
+    // each time would wipe out a FEN the user is in the middle of pasting, so
+    // it is only refreshed when the position itself has actually changed.
+    if (!state.editing) {
+      var fen = state.pos.fen();
+      if (fen !== state.shownFen && document.activeElement !== el.fenBox) {
+        el.fenBox.value = fen;
+        state.shownFen = fen;
+      }
+    }
+  }
+
+  /* ---------------------------------------------------------------- *
+   * Analysis
+   * ---------------------------------------------------------------- */
+
+  function analyze() {
+    if (state.editing) return;
+    driver.cancel();
+    state.best = null;
+
+    var result = state.pos.gameResult();
+    if (result === 'checkmate' || result === 'stalemate') {
+      state.analyzing = false;
+      setStatus(describeResult(result), result === 'checkmate' ? 'win' : '');
+      render();
+      return;
+    }
+
+    state.analyzing = true;
+    setStatus('Thinking…');
+    render();
+
+    var timeMs = parseInt(el.thinkTime.value, 10);
+    var fen = state.pos.fen();
+
+    driver.analyze(fen, timeMs, 64,
+      function onInfo(info) {
+        if (fen !== state.pos.fen()) return;   // position moved on
+        state.best = info;
+        renderAnalysis();
+        renderArrow();
+      },
+      function onDone(info, err) {
+        if (fen !== state.pos.fen()) return;
+        state.analyzing = false;
+        if (err) { setStatus(err, 'err'); render(); return; }
+        if (info) state.best = info;
+        var r = state.pos.gameResult();
+        setStatus(describeResult(r) || ('Done — ' +
+          (driver.usingWorker() ? 'searched in background.' : 'searched in page.')));
+        render();
+      });
+  }
+
+  function maybeAnalyze() {
+    if (el.autoAnalyze.checked) analyze();
+    else { state.best = null; render(); }
+  }
+
+  /* ---------------------------------------------------------------- *
+   * Moving pieces
+   * ---------------------------------------------------------------- */
+
+  function applyMove(move) {
+    var san = state.pos.moveToSan(move);
+    var fenBefore = state.pos.fen();
+    if (!state.pos.makeMove(move)) return false;
+    state.history.push({ san: san, uci: E.moveToUci(move), fenBefore: fenBefore });
+    state.lastMove = { from: E.moveFrom(move), to: E.moveTo(move) };
+    state.selected = -1;
+    state.legalFromSelected = [];
+    state.best = null;
+    return true;
+  }
+
+  function selectSquare(sq) {
+    var moves = state.pos.legalMoves().filter(function (m) { return E.moveFrom(m) === sq; });
+    if (!moves.length) { state.selected = -1; state.legalFromSelected = []; return false; }
+    state.selected = sq;
+    state.legalFromSelected = moves.map(function (m) { return E.moveTo(m); });
+    return true;
+  }
+
+  function tryMove(from, to) {
+    var candidates = state.pos.legalMoves().filter(function (m) {
+      return E.moveFrom(m) === from && E.moveTo(m) === to;
+    });
+    if (!candidates.length) return false;
+
+    if (candidates.length > 1) {
+      // Only promotions produce several moves between the same two squares.
+      askPromotion(function (type) {
+        var chosen = candidates.filter(function (m) { return E.movePromo(m) === type; })[0];
+        if (chosen && applyMove(chosen)) { render(); maybeAnalyze(); }
+      });
+      return true;
+    }
+
+    if (applyMove(candidates[0])) { render(); maybeAnalyze(); }
+    return true;
+  }
+
+  function askPromotion(cb) {
+    el.promoChoices.innerHTML = '';
+    [[E.QUEEN, 'q'], [E.ROOK, 'r'], [E.BISHOP, 'b'], [E.KNIGHT, 'n']].forEach(function (p) {
+      var b = document.createElement('button');
+      b.textContent = GLYPH[p[1]];
+      b.onclick = function () {
+        el.promoBackdrop.classList.remove('open');
+        cb(p[0]);
+      };
+      el.promoChoices.appendChild(b);
+    });
+    el.promoBackdrop.classList.add('open');
+  }
+
+  /* ---------------------------------------------------------------- *
+   * Pointer handling (click-click and drag both work, mouse and touch)
+   * ---------------------------------------------------------------- */
+
+  var drag = null;
+
+  function squareFromEvent(e) {
+    var target = document.elementFromPoint(e.clientX, e.clientY);
+    while (target && target !== el.board && !target.dataset.sq) target = target.parentElement;
+    return (target && target.dataset && target.dataset.sq !== undefined)
+      ? parseInt(target.dataset.sq, 10) : -1;
+  }
+
+  el.board.addEventListener('pointerdown', function (e) {
+    var sq = squareFromEvent(e);
+    if (sq < 0) return;
+    e.preventDefault();
+
+    if (state.editing) { editorPlace(sq); return; }
+
+    var board = state.pos.board;
+    var pc = board[sq];
+
+    // Second click completes a move.
+    if (state.selected >= 0 && state.legalFromSelected.indexOf(sq) >= 0) {
+      tryMove(state.selected, sq);
+      return;
+    }
+
+    if (pc && E.colorOf(pc) === state.pos.side) {
+      if (selectSquare(sq)) {
+        renderBoard();
+        startDrag(e, sq, pc);
+      }
+    } else {
+      state.selected = -1;
+      state.legalFromSelected = [];
+      renderBoard();
+    }
+  });
+
+  function startDrag(e, sq, pc) {
+    var ghost = document.createElement('span');
+    var ch = E.PIECE_TO_CHAR[pc];
+    ghost.className = 'piece dragging' + (ch === ch.toLowerCase() ? ' black' : '');
+    ghost.textContent = GLYPH[ch.toLowerCase()];
+    ghost.style.fontSize = window.getComputedStyle(
+      el.board.querySelector('.piece') || el.board.firstChild).fontSize;
+    document.body.appendChild(ghost);
+    drag = { from: sq, ghost: ghost, moved: false };
+    moveGhost(e);
+    el.board.setPointerCapture(e.pointerId);
+  }
+
+  function moveGhost(e) {
+    if (!drag) return;
+    drag.ghost.style.left = e.clientX + 'px';
+    drag.ghost.style.top = e.clientY + 'px';
+  }
+
+  el.board.addEventListener('pointermove', function (e) {
+    if (!drag) return;
+    drag.moved = true;
+    moveGhost(e);
+  });
+
+  function endDrag(e) {
+    if (!drag) return;
+    var from = drag.from, moved = drag.moved;
+    drag.ghost.remove();
+    drag = null;
+    if (!moved) return;                   // a plain click keeps the selection
+    var to = squareFromEvent(e);
+    if (to >= 0 && to !== from) tryMove(from, to);
+  }
+
+  el.board.addEventListener('pointerup', endDrag);
+  el.board.addEventListener('pointercancel', function () {
+    if (drag) { drag.ghost.remove(); drag = null; }
+  });
+
+  /* ---------------------------------------------------------------- *
+   * Position editor
+   * ---------------------------------------------------------------- */
+
+  function buildPalette() {
+    el.palette.innerHTML = '';
+    var items = [];
+    ['K', 'Q', 'R', 'B', 'N', 'P'].forEach(function (t) { items.push('w' + t); });
+    ['K', 'Q', 'R', 'B', 'N', 'P'].forEach(function (t) { items.push('b' + t); });
+    items.push('x');
+
+    items.forEach(function (key) {
+      var b = document.createElement('button');
+      if (key === 'x') {
+        b.textContent = '⌫';
+        b.title = 'Remove piece';
+      } else {
+        var isWhite = key.charAt(0) === 'w';
+        var letter = key.charAt(1);
+        b.textContent = GLYPH[letter.toLowerCase()];
+        b.style.color = isWhite ? '#f8f8f8' : '#2b2f36';
+        b.style.textShadow = isWhite ? '0 0 2px #000, 0 0 1px #000' : 'none';
+        b.title = (isWhite ? 'White ' : 'Black ') + letter;
+      }
+      b.dataset.key = key;
+      if (key === state.editPiece) b.classList.add('on');
+      b.onclick = function () {
+        state.editPiece = key;
+        Array.prototype.forEach.call(el.palette.children, function (c) {
+          c.classList.toggle('on', c.dataset.key === key);
+        });
+      };
+      el.palette.appendChild(b);
+    });
+  }
+
+  function editorPlace(sq) {
+    if (state.editPiece === 'x') {
+      state.editBoard[sq] = 0;
+    } else {
+      var color = state.editPiece.charAt(0) === 'w' ? E.WHITE : E.BLACK;
+      var letter = state.editPiece.charAt(1);
+      var type = { K: E.KING, Q: E.QUEEN, R: E.ROOK, B: E.BISHOP, N: E.KNIGHT, P: E.PAWN }[letter];
+      state.editBoard[sq] = E.pieceOf(color, type);
+    }
+    renderBoard();
+  }
+
+  function openEditor() {
+    state.editing = true;
+    state.editBoard = new Int8Array(state.pos.board);
+    state.selected = -1;
+    state.legalFromSelected = [];
+    state.best = null;
+    el.editSide.value = state.pos.side === E.WHITE ? 'w' : 'b';
+    document.getElementById('cWK').checked = !!(state.pos.castling & 1);
+    document.getElementById('cWQ').checked = !!(state.pos.castling & 2);
+    document.getElementById('cBK').checked = !!(state.pos.castling & 4);
+    document.getElementById('cBQ').checked = !!(state.pos.castling & 8);
+    el.editor.classList.add('open');
+    buildPalette();
+    setStatus('Click a piece above, then click squares to place it.');
+    render();
+  }
+
+  function closeEditor() {
+    state.editing = false;
+    state.editBoard = null;
+    el.editor.classList.remove('open');
+  }
+
+  function fenFromEditor() {
+    var rows = [];
+    for (var rank = 7; rank >= 0; rank--) {
+      var row = '', empty = 0;
+      for (var file = 0; file < 8; file++) {
+        var pc = state.editBoard[rank * 16 + file];
+        if (!pc) { empty++; continue; }
+        if (empty) { row += empty; empty = 0; }
+        row += E.PIECE_TO_CHAR[pc];
+      }
+      if (empty) row += empty;
+      rows.push(row);
+    }
+    var cast = '';
+    if (document.getElementById('cWK').checked) cast += 'K';
+    if (document.getElementById('cWQ').checked) cast += 'Q';
+    if (document.getElementById('cBK').checked) cast += 'k';
+    if (document.getElementById('cBQ').checked) cast += 'q';
+    return rows.join('/') + ' ' + el.editSide.value + ' ' + (cast || '-') + ' - 0 1';
+  }
+
+  // The engine assumes a position that could actually arise, so reject the
+  // ones that would make it misbehave rather than searching them anyway.
+  function validate(pos) {
+    var kings = [0, 0];
+    for (var c = 0; c < 2; c++) {
+      for (var i = 0; i < pos.pcount[c]; i++) {
+        if (E.typeOf(pos.board[pos.plist[c][i]]) === E.KING) kings[c]++;
+      }
+    }
+    if (kings[0] !== 1 || kings[1] !== 1) return 'Each side needs exactly one king.';
+    for (var f = 0; f < 8; f++) {
+      for (var r = 0; r < 8; r += 7) {
+        var pc = pos.board[r * 16 + f];
+        if (pc && E.typeOf(pc) === E.PAWN) return 'Pawns cannot stand on the first or last rank.';
+      }
+    }
+    // The side that just moved cannot still be in check.
+    if (pos.isSquareAttacked(pos.kingSq[pos.side ^ 1], pos.side)) {
+      return 'The side not to move is in check — that position cannot occur.';
+    }
+    return null;
+  }
+
+  function applyEditor() {
+    var fen = fenFromEditor();
+    var pos;
+    try { pos = new E.Position(fen); }
+    catch (err) { setStatus(String(err.message || err), 'err'); return; }
+
+    var problem = validate(pos);
+    if (problem) { setStatus(problem, 'err'); return; }
+
+    state.pos = pos;
+    state.history = [];
+    state.lastMove = null;
+    state.best = null;
+    closeEditor();
+    setStatus('Position set.');
+    render();
+    maybeAnalyze();
+  }
+
+  /* ---------------------------------------------------------------- *
+   * Controls
+   * ---------------------------------------------------------------- */
+
+  document.getElementById('btnAnalyze').onclick = analyze;
+
+  document.getElementById('btnPlayBest').onclick = function () {
+    if (!state.best || !state.best.uci) return;
+    var move = state.pos.moveFromString(state.best.uci);
+    if (!move) { setStatus('That move is no longer legal here.', 'err'); return; }
+    applyMove(move);
+    render();
+    maybeAnalyze();
+  };
+
+  document.getElementById('btnUndo').onclick = function () {
+    if (!state.history.length) return;
+    var last = state.history.pop();
+    state.pos = new E.Position(last.fenBefore);
+    // Rebuild the highlight from the move now at the end of the list.
+    if (state.history.length) {
+      var prev = state.history[state.history.length - 1];
+      state.lastMove = {
+        from: E.squareFromName(prev.uci.slice(0, 2)),
+        to: E.squareFromName(prev.uci.slice(2, 4))
+      };
+    } else {
+      state.lastMove = null;
+    }
+    state.selected = -1;
+    state.legalFromSelected = [];
+    state.best = null;
+    driver.cancel();
+    state.analyzing = false;
+    setStatus('Took back ' + last.san + '.');
+    render();
+    maybeAnalyze();
+  };
+
+  document.getElementById('btnFlip').onclick = function () {
+    state.orientation ^= 1;
+    render();
+  };
+
+  document.getElementById('btnReset').onclick = function () {
+    driver.cancel();
+    state.pos = new E.Position(E.START_FEN);
+    state.history = [];
+    state.lastMove = null;
+    state.best = null;
+    state.selected = -1;
+    state.legalFromSelected = [];
+    state.analyzing = false;
+    closeEditor();
+    setStatus('New game.');
+    render();
+    maybeAnalyze();
+  };
+
+  document.getElementById('btnEdit').onclick = function () {
+    if (state.editing) closeEditor(); else openEditor();
+    render();
+  };
+
+  document.getElementById('btnApplyEdit').onclick = applyEditor;
+  document.getElementById('btnCancelEdit').onclick = function () {
+    closeEditor();
+    setStatus('Edit cancelled.');
+    render();
+  };
+
+  document.getElementById('btnClearBoard').onclick = function () {
+    state.editBoard = new Int8Array(128);
+    renderBoard();
+  };
+
+  document.getElementById('btnStartPos').onclick = function () {
+    state.editBoard = new Int8Array(new E.Position(E.START_FEN).board);
+    renderBoard();
+  };
+
+  document.getElementById('btnLoadFen').onclick = function () {
+    var fen = el.fenBox.value.trim();
+    var pos;
+    try { pos = new E.Position(fen); }
+    catch (err) { setStatus('Could not read that FEN: ' + (err.message || err), 'err'); return; }
+    var problem = validate(pos);
+    if (problem) { setStatus(problem, 'err'); return; }
+    driver.cancel();
+    state.pos = pos;
+    state.history = [];
+    state.lastMove = null;
+    state.best = null;
+    state.selected = -1;
+    state.legalFromSelected = [];
+    setStatus('Position loaded.');
+    render();
+    maybeAnalyze();
+  };
+
+  document.getElementById('btnCopyFen').onclick = function () {
+    el.fenBox.select();
+    var ok = false;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(el.fenBox.value).then(function () {
+        setStatus('FEN copied.');
+      }, function () { setStatus('Press Ctrl/Cmd+C to copy.'); });
+      return;
+    }
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    setStatus(ok ? 'FEN copied.' : 'Press Ctrl/Cmd+C to copy.');
+  };
+
+  el.thinkTime.oninput = function () {
+    el.timeLabel.textContent = (parseInt(el.thinkTime.value, 10) / 1000).toFixed(1) + 's';
+  };
+
+  el.promoBackdrop.onclick = function (e) {
+    if (e.target === el.promoBackdrop) el.promoBackdrop.classList.remove('open');
+  };
+
+  document.addEventListener('keydown', function (e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+    if (e.key === 'f') { state.orientation ^= 1; render(); }
+    else if (e.key === ' ') { e.preventDefault(); analyze(); }
+    else if (e.key === 'ArrowLeft') document.getElementById('btnUndo').click();
+  });
+
+  /* ---------------------------------------------------------------- *
+   * Start
+   * ---------------------------------------------------------------- */
+
+  el.thinkTime.oninput();
+  render();
+  setStatus(driver.usingWorker()
+    ? 'Ready. Make a move or set up a position.'
+    : 'Ready. Running in-page (open via a local web server for background analysis).');
+  maybeAnalyze();
+})();
+</script>
+</body>
+</html>
